@@ -1,0 +1,29 @@
+# Build artifacts
+*.o
+*.out
+a.out
+gray_scott
+main
+
+# System files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Editor files
+*~
+*.swp
+*.swo
+.vscode/
+*.sublime-*
+
+# Temporary files
+*.tmp
+*.temp
+
+# GIF output directory
+gif/ 
