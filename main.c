@@ -38,8 +38,8 @@
 
 //Visualization parameters
 
-#define FRAME_DELAY 2 // Delay between frames in 1/100ths of a second (0.02 seconds) - Try very short delay for PowerPoint
-#define FRAME_NUMBER 64 // Reduced frame count for PowerPoint compatibility
+#define FRAME_DELAY 30 // Delay between frames in 1/100ths of a second (0.02 seconds) - Try very short delay for PowerPoint
+#define FRAME_NUMBER 128 
 #define EXPORT_INTERVAL (int)(totalLoop/FRAME_NUMBER)
 
 // MP4 output parameters
@@ -435,11 +435,11 @@ int main(void){
   */
   
   // Parallel parameter sweep
-  printf("Gray-Scott parameter sweep: f=[0.01-0.06], k=[0.04-0.07], step=0.001\n");
+  printf("Gray-Scott parameter sweep: f=[0.005-0.07], k=[0.04-0.07], step=0.001\n");
   printf("OpenMP threads: %d\n", omp_get_max_threads());
   
   // Define parameter ranges
-  const double f_start = 0.01, f_end = 0.06, f_step = 0.001;
+  const double f_start = 0.005, f_end = 0.07, f_step = 0.001;
   const double k_start = 0.04, k_end = 0.07, k_step = 0.001;
   
   const int f_count = (int)((f_end - f_start) / f_step + 0.5);
