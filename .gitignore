@@ -25,5 +25,6 @@ Thumbs.db
 *.tmp
 *.temp
 
-# GIF output directory
-gif/ 
+# Output directories
+gif/
+mp4/ 
