@@ -44,6 +44,30 @@ make clean && make
 ./gray_scott
 ```
 
+## 可視化ツール
+
+### インタラクティブf-kマップ
+
+Jupyter Notebookで全パラメータ空間の可視化が可能です：
+
+```bash
+# 必要なPythonライブラリのインストール
+pip install --break-system-packages ipywidgets ipympl pillow numpy matplotlib
+
+# Jupyter Labの起動
+jupyter lab fk_click_show_gif.ipynb
+```
+
+**機能:**
+- f-kパラメータ空間の全体像を空間変化率でカラーマップ表示
+- マップ上の点をクリックすると対応するGIFアニメーションを表示
+- 初回実行時は全GIFファイルを解析（数分）、以降はキャッシュから高速読み込み
+- 理論的な分岐曲線（Hopf分岐、数値解境界）も表示
+
+**ライブラリ構成:**
+- `fk_analysis.py`: GIF解析とデータ処理ライブラリ
+- `fk_click_show_gif.ipynb`: インタラクティブ可視化ノートブック
+
 ## 出力ファイル
 
 ### GIFアニメーション
