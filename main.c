@@ -6,7 +6,7 @@
 // #include "MT.h" // This file isn't present, commenting out for now
 // Will use stdlib.h rand() instead
 #include "/opt/homebrew/opt/giflib/include/gif_lib.h" // Include the GIF library with absolute path
-#include <omp.h> // OpenMP for parallelization
+#include "omp.h" // OpenMP for parallelization
 
 #define _USE_MATH_DEFINES
 
@@ -439,8 +439,8 @@ int main(void){
   printf("OpenMP threads: %d\n", omp_get_max_threads());
   
   // Define parameter ranges
-  const double f_start = 0.005, f_end = 0.07, f_step = 0.001;
-  const double k_start = 0.04, k_end = 0.07, k_step = 0.001;
+  const double f_start = 0.005, f_end = 0.07, f_step = 0.0005;
+  const double k_start = 0.04, k_end = 0.07, k_step = 0.00025;
   
   const int f_count = (int)((f_end - f_start) / f_step + 0.5);
   const int k_count = (int)((k_end - k_start) / k_step + 0.5);

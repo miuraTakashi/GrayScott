@@ -242,3 +242,4 @@ def load_or_process_data(gif_dir='gif', cache_file='fk_data_cache.npz',
         save_cache(data, cache_file)
     
     return data
+
