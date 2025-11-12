@@ -31,7 +31,7 @@ mp4/
 
 # Cache files
 *.npz
-fk_data_cache.npz
+!fk_data_cache.npz
 
 # Python cache
 __pycache__/
