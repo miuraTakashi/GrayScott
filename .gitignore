@@ -27,6 +27,8 @@ Thumbs.db
 
 # Output directories
 mp4/
+gif/
+*.gif
 
 # Cache files
 *.npz

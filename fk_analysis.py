@@ -7,6 +7,8 @@ import os
 import re
 import glob
 import numpy as np
+import csv
+import json
 from PIL import Image as PILImage
 
 
@@ -242,4 +244,113 @@ def load_or_process_data(gif_dir='gif', cache_file='fk_data_cache.npz',
         save_cache(data, cache_file)
     
     return data
+
+
+def export_to_csv(data, output_file='fk_data.csv'):
+    """
+    Export data to CSV format for Wolfram Language
+    
+    Parameters:
+    -----------
+    data : dict
+        Dictionary returned by load_or_process_data() or load_cache()
+    output_file : str
+        Output CSV file path (default: 'fk_data.csv')
+    """
+    with open(output_file, 'w', newline='') as f:
+        writer = csv.writer(f)
+        # Write header
+        writer.writerow(['f', 'k', 'variation'])
+        # Write data
+        for i in range(len(data['f_values'])):
+            writer.writerow([
+                data['f_values'][i],
+                data['k_values'][i],
+                data['variations'][i]
+            ])
+    print(f"Data exported to {output_file}")
+    print(f"  {len(data['f_values'])} data points")
+    print(f"\nWolfram Language usage:")
+    print(f"  data = Import[\"{output_file}\", \"CSV\"];")
+    print(f"  f = data[[2;;, 1]];")
+    print(f"  k = data[[2;;, 2]];")
+    print(f"  variation = data[[2;;, 3]];")
+
+
+def export_to_json(data, output_file='fk_data.json'):
+    """
+    Export data to JSON format for Wolfram Language
+    
+    Parameters:
+    -----------
+    data : dict
+        Dictionary returned by load_or_process_data() or load_cache()
+    output_file : str
+        Output JSON file path (default: 'fk_data.json')
+    """
+    # Convert numpy arrays to lists for JSON serialization
+    json_data = {
+        'f_values': data['f_values'].tolist(),
+        'k_values': data['k_values'].tolist(),
+        'variations': data['variations'].tolist()
+    }
+    
+    with open(output_file, 'w') as f:
+        json.dump(json_data, f, indent=2)
+    print(f"Data exported to {output_file}")
+    print(f"  {len(data['f_values'])} data points")
+    print(f"\nWolfram Language usage:")
+    print(f"  data = Import[\"{output_file}\", \"JSON\"];")
+    print(f"  f = data[\"f_values\"];")
+    print(f"  k = data[\"k_values\"];")
+    print(f"  variation = data[\"variations\"];")
+
+
+def export_to_wolfram(data, output_file='fk_data.wl', format='list'):
+    """
+    Export data to Wolfram Language native format (.wl)
+    
+    Parameters:
+    -----------
+    data : dict
+        Dictionary returned by load_or_process_data() or load_cache()
+    output_file : str
+        Output .wl file path (default: 'fk_data.wl')
+    format : str
+        Output format: 'list' (default) or 'association'
+        - 'list': Returns {f, k, variation} as nested lists
+        - 'association': Returns <|"f" -> {...}, "k" -> {...}, "variation" -> {...}|>
+    """
+    f_vals = data['f_values'].tolist()
+    k_vals = data['k_values'].tolist()
+    var_vals = data['variations'].tolist()
+    
+    with open(output_file, 'w') as f:
+        if format == 'association':
+            f.write("<|\n")
+            f.write('  "f" -> ' + str(f_vals).replace("'", '"') + ',\n')
+            f.write('  "k" -> ' + str(k_vals).replace("'", '"') + ',\n')
+            f.write('  "variation" -> ' + str(var_vals).replace("'", '"') + '\n')
+            f.write("|>")
+        else:  # list format
+            f.write("{\n")
+            f.write("  " + str(f_vals) + ",\n")
+            f.write("  " + str(k_vals) + ",\n")
+            f.write("  " + str(var_vals) + "\n")
+            f.write("}")
+    
+    print(f"Data exported to {output_file}")
+    print(f"  {len(data['f_values'])} data points")
+    print(f"  Format: {format}")
+    print(f"\nWolfram Language usage:")
+    if format == 'association':
+        print(f"  data = Get[\"{output_file}\"];")
+        print(f"  f = data[\"f\"];")
+        print(f"  k = data[\"k\"];")
+        print(f"  variation = data[\"variation\"];")
+    else:
+        print(f"  data = Get[\"{output_file}\"];")
+        print(f"  f = data[[1]];")
+        print(f"  k = data[[2]];")
+        print(f"  variation = data[[3]];")
 
