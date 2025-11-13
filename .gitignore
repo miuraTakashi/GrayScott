@@ -26,7 +26,6 @@ Thumbs.db
 *.temp
 
 # Output directories
-gif/
 mp4/
 
 # Cache files
