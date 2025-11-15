@@ -80,6 +80,35 @@ gif/GrayScott-f0.0250-k0.0550-00.gif
 mp4/GrayScott-f0.0250-k0.0550-00.mp4
 ```
 
+## GIFフォルダの同期について
+
+gifフォルダは約7.3GB、15,000個以上のファイルを含むため、Gitで直接管理するのは適していません。
+現在、gifフォルダは`.gitignore`で無視されています。
+
+### 同期方法
+
+詳細は [`sync_gif_folder.md`](sync_gif_folder.md) を参照してください。
+
+**推奨方法:**
+
+1. **アーカイブファイルとして保存**（最も簡単）
+   ```bash
+   ./create_gif_archive.sh
+   # 作成された gif_archive.tar.gz をGitHub Releasesや外部ストレージにアップロード
+   ```
+
+2. **rsyncで直接同期**
+   ```bash
+   ./sync_gif_rsync.sh user@remote-server /path/to/destination
+   ```
+
+3. **Git LFSを使用**（GitHub有料プランが必要な場合あり）
+   ```bash
+   ./setup_git_lfs.sh
+   ```
+
+詳細な手順とその他の方法については、`sync_gif_folder.md`を参照してください。
+
 ## パラメータ設定
 
 ### デフォルト設定
@@ -122,13 +151,26 @@ const double k_start = 0.04, k_end = 0.07, k_step = 0.001;
 
 ```
 GrayScott/
-├── main.c              # メインプログラム
-├── Makefile           # ビルド設定
-├── README.md          # このファイル
-├── DEVELOPMENT_LOG.md # 開発記録
-├── .gitignore        # Git除外設定
-├── gif/              # GIF出力ディレクトリ
-└── mp4/              # MP4出力ディレクトリ
+├── main.c                    # メインプログラム（C言語実装）
+├── Makefile                 # ビルド設定
+├── README.md                 # このファイル
+├── DEVELOPMENT_LOG.md        # 開発記録
+├── .gitignore               # Git除外設定
+│
+├── fk_analysis.py           # GIF解析とデータ処理ライブラリ
+├── fk_click_show_gif.ipynb  # インタラクティブ可視化ノートブック
+├── export_to_wolfram.py     # Wolfram Language形式へのエクスポート
+├── fk_data_cache.npz        # データキャッシュ（約4.2MB）
+├── fk_data.csv              # CSV形式データ
+├── fk_data.json             # JSON形式データ
+│
+├── sync_gif_folder.md       # GIFフォルダ同期方法のドキュメント
+├── create_gif_archive.sh    # GIFフォルダのアーカイブ作成スクリプト
+├── sync_gif_rsync.sh        # rsyncによる同期スクリプト
+├── setup_git_lfs.sh         # Git LFS設定スクリプト
+│
+├── gif/                     # GIF出力ディレクトリ（約7.3GB、15,000+ファイル）
+└── mp4/                     # MP4出力ディレクトリ
 ```
 
 ## 技術詳細
@@ -184,6 +226,43 @@ MIT License - 詳細は[LICENSE](LICENSE)ファイルを参照
 
 - Gray, P. & Scott, S.K. (1983). "Autocatalytic reactions in the isothermal, continuous stirred tank reactor"
 - Pearson, J.E. (1993). "Complex patterns in a simple system"
+
+## 更新履歴
+
+### 2025/11/15
+- **可視化機能の改善**
+  - Jupyter Notebook (`fk_click_show_gif.ipynb`) のGIF表示サイズを128x128に最適化
+  - カラーバーの非表示オプションを追加
+  - GIFプレビューウィンドウの余白を削除し、実際のGIFサイズに合わせて表示
+
+- **データエクスポート機能**
+  - Wolfram Language互換形式へのエクスポート機能を追加 (`export_to_wolfram.py`)
+  - CSV、JSON、Wolfram Language (.wl) 形式でのデータ出力に対応
+  - `fk_analysis.py`にエクスポート関数を追加
+
+- **プロジェクト整理**
+  - Google Sites関連の試行ファイルを削除（13ファイル）
+  - 一時ファイルとデバッグスクリプトを整理
+  - README.mdに更新履歴セクションを追加
+
+### 2025/10/05
+- **大規模データ処理の最適化**
+  - GIFフォルダ（約7.3GB、15,000ファイル以上）の同期方法を整理
+  - Git LFS、rsync、アーカイブ作成スクリプトを追加
+  - `.gitignore`にgifフォルダを追加
+
+- **インタラクティブ可視化ツールの追加**
+  - `fk_analysis.py`: GIF解析とデータ処理ライブラリ
+  - `fk_click_show_gif.ipynb`: f-kパラメータマップのインタラクティブ可視化
+  - 空間変化率によるカラーマップ表示
+  - クリックで対応するGIFアニメーションを表示
+  - 理論的分岐曲線（Hopf分岐、数値解境界）の表示
+
+### 初期リリース
+- Gray-Scott反応拡散モデルのC言語実装
+- OpenMP並列化による高性能シミュレーション
+- GIFアニメーションとMP4動画の生成機能
+- パラメータスイープ機能（1,500通りの組み合わせ）
 
 ## 作者
 
