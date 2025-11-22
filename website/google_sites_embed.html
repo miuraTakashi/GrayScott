@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Gray-Scott f-k Map</title>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <!-- Load the generated data -->
+    <script src="fk_web_data.js"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #container {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        #plot-div {
+            flex: 1 1 500px;
+            height: 500px;
+            border: 1px solid #ddd;
+        }
+
+        #preview-div {
+            flex: 0 0 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #f9f9f9;
+            height: fit-content;
+        }
+
+        #gif-display {
+            width: 128px;
+            height: 128px;
+            background-color: #eee;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #ccc;
+        }
+
+        #gif-display img {
+            width: 128px;
+            height: 128px;
+            display: block;
+        }
+
+        #info-text {
+            margin-top: 10px;
+            font-size: 14px;
+            text-align: center;
+            word-break: break-all;
+        }
+
+        .controls {
+            margin-bottom: 10px;
+            width: 100%;
+            max-width: 900px;
+            text-align: left;
+        }
+
+        label {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        input[type="text"] {
+            width: 300px;
+            padding: 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="controls">
+        <label for="base-url">GIF Base URL:</label>
+        <input type="text" id="base-url" value="./mp4" placeholder="e.g. https://example.com/mp4">
+    </div>
+
+    <div id="container">
+        <div id="plot-div"></div>
+
+        <div id="preview-div">
+            <strong>Selected Point</strong>
+            <div id="info-text">Click a point...</div>
+            <div id="gif-display">
+                <span>No GIF</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        let gifBaseUrl = document.getElementById('base-url').value;
+
+        // Update base URL when input changes
+        document.getElementById('base-url').addEventListener('change', (e) => {
+            gifBaseUrl = e.target.value;
+            // Remove trailing slash if present
+            if (gifBaseUrl.endsWith('/')) {
+                gifBaseUrl = gifBaseUrl.slice(0, -1);
+            }
+        });
+
+        // Prepare data for Plotly
+        const trace = {
+            x: fkData.k,
+            y: fkData.f,
+            mode: 'markers',
+            type: 'scatter',
+            marker: {
+                size: 6,
+                color: fkData.v,
+                colorscale: 'Viridis',
+                colorbar: {
+                    title: 'Variation',
+                    thickness: 10
+                },
+                opacity: 0.8
+            },
+            text: fkData.v.map((v, i) => `f=${fkData.f[i].toFixed(4)}<br>k=${fkData.k[i].toFixed(4)}<br>Var=${v.toFixed(2)}`),
+            hoverinfo: 'text'
+        };
+
+        const layout = {
+            title: 'Gray-Scott f-k Map (Click to view GIF)',
+            xaxis: { title: 'k (Feed rate)', range: [0.03, 0.07] },
+            yaxis: { title: 'f (Kill rate)' },
+            hovermode: 'closest',
+            margin: { t: 40, b: 40, l: 50, r: 20 },
+            width: 500,
+            height: 500
+        };
+
+        const config = {
+            responsive: true,
+            displayModeBar: true
+        };
+
+        // Render plot
+        Plotly.newPlot('plot-div', [trace], layout, config);
+
+        // Handle click events
+        const plotDiv = document.getElementById('plot-div');
+        const infoText = document.getElementById('info-text');
+        const gifDisplay = document.getElementById('gif-display');
+
+        plotDiv.on('plotly_click', function (data) {
+            if (data.points.length > 0) {
+                const pointIndex = data.points[0].pointIndex;
+                const filename = fkData.filenames[pointIndex];
+                const fVal = fkData.f[pointIndex];
+                const kVal = fkData.k[pointIndex];
+                const vVal = fkData.v[pointIndex];
+
+                // Update info text
+                infoText.innerHTML = `
+                    f: ${fVal.toFixed(4)}<br>
+                    k: ${kVal.toFixed(4)}<br>
+                    Var: ${vVal.toFixed(2)}<br>
+                    <small>${filename}</small>
+                `;
+
+                // Update GIF (Video)
+                const gifUrl = `${gifBaseUrl}/${filename}`;
+                gifDisplay.innerHTML = `
+                    <video width="128" height="128" autoplay loop muted playsinline>
+                        <source src="${gifUrl}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                `;
+            }
+        });
+    </script>
+</body>
+
+</html>
