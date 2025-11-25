@@ -155,10 +155,8 @@ const double k_start = 0.04, k_end = 0.07, k_step = 0.001;
     - `mp4/`: MP4動画ファイル
 - **`scripts/`**: データ処理・管理用スクリプト
     - `generate_web_data.py`: Web用データ生成
-    - `resize_gifs.py`: 画像リサイズ
-    - `fk_analysis.py`: 解析ライブラリ
+    - `resize_gifs_small.py`: 画像リサイズ（Web用）
 - **`gif/`**: オリジナルGIF出力（高解像度）
-- **`gif_half/`**: リサイズ版GIF出力
 - **`main.c`**: シミュレーション本体（C言語）
 
 ## ホームページ（可視化マップ）
