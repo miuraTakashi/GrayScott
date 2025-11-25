@@ -149,29 +149,28 @@ const double k_start = 0.04, k_end = 0.07, k_step = 0.001;
 
 ## プロジェクト構造
 
-```
-GrayScott/
-├── main.c                    # メインプログラム（C言語実装）
-├── Makefile                 # ビルド設定
-├── README.md                 # このファイル
-├── DEVELOPMENT_LOG.md        # 開発記録
-├── .gitignore               # Git除外設定
-│
-├── fk_analysis.py           # GIF解析とデータ処理ライブラリ
-├── fk_click_show_gif.ipynb  # インタラクティブ可視化ノートブック
-├── export_to_wolfram.py     # Wolfram Language形式へのエクスポート
-├── fk_data_cache.npz        # データキャッシュ（約4.2MB）
-├── fk_data.csv              # CSV形式データ
-├── fk_data.json             # JSON形式データ
-│
-├── sync_gif_folder.md       # GIFフォルダ同期方法のドキュメント
-├── create_gif_archive.sh    # GIFフォルダのアーカイブ作成スクリプト
-├── sync_gif_rsync.sh        # rsyncによる同期スクリプト
-├── setup_git_lfs.sh         # Git LFS設定スクリプト
-│
-├── gif/                     # GIF出力ディレクトリ（約7.3GB、15,000+ファイル）
-└── mp4/                     # MP4出力ディレクトリ
-```
+- **`website/`**: Web公開用のファイル一式（HTML, JS, MP4）
+    - `google_sites_embed.html`: 埋め込み用HTMLファイル
+    - `fk_web_data.js`: シミュレーションデータ
+    - `mp4/`: MP4動画ファイル
+- **`scripts/`**: データ処理・管理用スクリプト
+    - `generate_web_data.py`: Web用データ生成
+    - `resize_gifs.py`: 画像リサイズ
+    - `fk_analysis.py`: 解析ライブラリ
+- **`gif/`**: オリジナルGIF出力（高解像度）
+- **`gif_half/`**: リサイズ版GIF出力
+- **`main.c`**: シミュレーション本体（C言語）
+
+## ホームページ（可視化マップ）
+
+GitHub Pagesでインタラクティブなf-kマップを公開しています。
+
+**URL**: [https://miuraTakashi.github.io/GrayScott/website/google_sites_embed.html](https://miuraTakashi.github.io/GrayScott/website/google_sites_embed.html)
+
+**アクセス方法**:
+1. 上記URLをクリックして開きます。
+2. 画面上部の "GIF Base URL" 入力欄に `./mp4` と入力します（デフォルトで入力されている場合もあります）。
+3. マップ上の点をクリックすると、そのパラメータに対応するシミュレーション動画が再生されます。
 
 ## 技術詳細
 

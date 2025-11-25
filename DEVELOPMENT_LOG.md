@@ -215,9 +215,10 @@ make clean && make
 
 ### 参考文献・技術資料
 - Gray, P. & Scott, S.K. (1983). Autocatalytic reactions in the isothermal, continuous stirred tank reactor
+- Pearson, J. E. (1993). Complex patterns in a simple system. Science, 261(5118), 189-192.
 - FFTW Documentation: https://www.fftw.org/
 - OpenMP Specification: https://www.openmp.org/
 - FFmpeg Documentation: https://ffmpeg.org/
 
 ---
-*最終更新: 2024年12月* 
+*最終更新: 2025年11月25日* 

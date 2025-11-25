@@ -3,6 +3,9 @@
 Export Gray-Scott f-k parameter data to Wolfram Language compatible formats
 """
 
+import os
+import sys
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'visualization'))
 import fk_analysis
 
 # Load data from cache
@@ -15,10 +18,12 @@ print("Exporting data to Wolfram Language compatible formats...")
 print("="*60 + "\n")
 
 # Option 1: CSV format (most compatible)
-fk_analysis.export_to_csv(data, output_file='fk_data.csv')
+output_dir = os.path.join(os.path.dirname(__file__), '..', 'visualization')
+os.makedirs(output_dir, exist_ok=True)
+fk_analysis.export_to_csv(data, output_file=os.path.join(output_dir, 'fk_data.csv'))
 
 # Option 2: JSON format
-fk_analysis.export_to_json(data, output_file='fk_data.json')
+fk_analysis.export_to_json(data, output_file=os.path.join(output_dir, 'fk_data.json'))
 
 # Option 3: Wolfram Language native format (.wl) - Association format (recommended)
 fk_analysis.export_to_wolfram(data, output_file='fk_data.wl', format='association')
