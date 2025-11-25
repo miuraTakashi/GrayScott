@@ -45,7 +45,7 @@
             height: fit-content;
         }
 
-        #gif-display {
+        #video-display {
             width: 128px;
             height: 128px;
             background-color: #eee;
@@ -56,7 +56,7 @@
             border: 1px solid #ccc;
         }
 
-        #gif-display img {
+        #video-display img {
             width: 128px;
             height: 128px;
             display: block;
@@ -91,7 +91,7 @@
 <body>
 
     <div class="controls">
-        <label for="base-url">GIF Base URL:</label>
+        <label for="base-url">MP4 Base URL:</label>
         <input type="text" id="base-url" value="./mp4" placeholder="e.g. https://example.com/mp4">
     </div>
 
@@ -101,22 +101,22 @@
         <div id="preview-div">
             <strong>Selected Point</strong>
             <div id="info-text">Click a point...</div>
-            <div id="gif-display">
-                <span>No GIF</span>
+            <div id="video-display">
+                <span>No video</span>
             </div>
         </div>
     </div>
 
     <script>
         // Configuration
-        let gifBaseUrl = document.getElementById('base-url').value;
+        let mp4BaseUrl = document.getElementById('base-url').value;
 
         // Update base URL when input changes
         document.getElementById('base-url').addEventListener('change', (e) => {
-            gifBaseUrl = e.target.value;
+            mp4BaseUrl = e.target.value;
             // Remove trailing slash if present
-            if (gifBaseUrl.endsWith('/')) {
-                gifBaseUrl = gifBaseUrl.slice(0, -1);
+            if (mp4BaseUrl.endsWith('/')) {
+                mp4BaseUrl = mp4BaseUrl.slice(0, -1);
             }
         });
 
@@ -141,11 +141,11 @@
         };
 
         const layout = {
-            title: 'Gray-Scott f-k Map (Click to view GIF)',
+            title: 'Gray-Scott f-k Map (Click to view video)',
             xaxis: { title: 'k (Feed rate)', range: [0.03, 0.07] },
             yaxis: { title: 'f (Kill rate)' },
             hovermode: 'closest',
-            margin: { t: 40, b: 40, l: 50, r: 20 },
+            margin: { t: 70, b: 40, l: 50, r: 20 },
             width: 500,
             height: 500
         };
@@ -161,7 +161,7 @@
         // Handle click events
         const plotDiv = document.getElementById('plot-div');
         const infoText = document.getElementById('info-text');
-        const gifDisplay = document.getElementById('gif-display');
+        const videoDisplay = document.getElementById('video-display');
 
         plotDiv.on('plotly_click', function (data) {
             if (data.points.length > 0) {
@@ -179,11 +179,11 @@
                     <small>${filename}</small>
                 `;
 
-                // Update GIF (Video)
-                const gifUrl = `${gifBaseUrl}/${filename}`;
-                gifDisplay.innerHTML = `
+                // Update video
+                const videoUrl = `${mp4BaseUrl}/${filename}`;
+                videoDisplay.innerHTML = `
                     <video width="128" height="128" autoplay loop muted playsinline>
-                        <source src="${gifUrl}" type="video/mp4">
+                        <source src="${videoUrl}" type="video/mp4">
                         Your browser does not support the video tag.
                     </video>
                 `;
