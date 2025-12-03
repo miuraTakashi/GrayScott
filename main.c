@@ -3,6 +3,7 @@
 #include "/opt/homebrew/opt/fftw/include/fftw3.h"
 #include <stdlib.h>
 #include <time.h>
+#include <string.h> // For strcmp
 // #include "MT.h" // This file isn't present, commenting out for now
 // Will use stdlib.h rand() instead
 #include "/opt/homebrew/opt/giflib/include/gif_lib.h" // Include the GIF library with absolute path
@@ -66,9 +67,13 @@ ColorMapObject* create_colormap() {
 }
 
 // Function to write a PPM frame for MP4 conversion
-void write_ppm_frame(double* u, int frame_number, double ff_val, double k_val, int run_number) {
+void write_ppm_frame(double* u, int frame_number, double ff_val, double k_val, int run_number, int use_band_initial) {
   char filename[100];
-  sprintf(filename, "mp4/frames_f%0.4f_k%0.4f_%02d/frame_%04d.ppm", ff_val, k_val, run_number, frame_number);
+  if (use_band_initial) {
+    sprintf(filename, "gif_band/frames_f%0.4f_k%0.4f_%02d/frame_%04d.ppm", ff_val, k_val, run_number, frame_number);
+  } else {
+    sprintf(filename, "mp4/frames_f%0.4f_k%0.4f_%02d/frame_%04d.ppm", ff_val, k_val, run_number, frame_number);
+  }
   
   FILE* fp = fopen(filename, "wb");
   if (!fp) {
@@ -107,13 +112,18 @@ void write_ppm_frame(double* u, int frame_number, double ff_val, double k_val, i
 }
 
 // Function to create MP4 from PPM frames using system FFmpeg
-void create_mp4_from_frames(double ff_val, double k_val, int run_number) {
+void create_mp4_from_frames(double ff_val, double k_val, int run_number, int use_band_initial) {
   char frames_dir[100];
   char output_file[100];
   char ffmpeg_cmd[300];
   
-  sprintf(frames_dir, "mp4/frames_f%0.4f_k%0.4f_%02d", ff_val, k_val, run_number);
-  sprintf(output_file, "mp4/GrayScott-f%0.4f-k%0.4f-%02d.mp4", ff_val, k_val, run_number);
+  if (use_band_initial) {
+    sprintf(frames_dir, "gif_band/frames_f%0.4f_k%0.4f_%02d", ff_val, k_val, run_number);
+    sprintf(output_file, "gif_band/GrayScott-f%0.4f-k%0.4f-%02d.mp4", ff_val, k_val, run_number);
+  } else {
+    sprintf(frames_dir, "mp4/frames_f%0.4f_k%0.4f_%02d", ff_val, k_val, run_number);
+    sprintf(output_file, "mp4/GrayScott-f%0.4f-k%0.4f-%02d.mp4", ff_val, k_val, run_number);
+  }
   
   // Create FFmpeg command
   sprintf(ffmpeg_cmd, 
@@ -172,7 +182,7 @@ double g(double u, double v){
 }
 
 
-int calc(int s, double f_param, double k_param){
+int calc(int s, double f_param, double k_param, int use_band_initial){
   int n1;
   int m;
   int y;
@@ -185,7 +195,11 @@ int calc(int s, double f_param, double k_param){
     // Create frames directory for MP4 output if needed
     if (OUTPUT_MP4) {
       char frames_dir[100];
-      sprintf(frames_dir, "mp4/frames_f%0.4f_k%0.4f_%02d", f_param, k_param, j);
+      if (use_band_initial) {
+        sprintf(frames_dir, "gif_band/frames_f%0.4f_k%0.4f_%02d", f_param, k_param, j);
+      } else {
+        sprintf(frames_dir, "mp4/frames_f%0.4f_k%0.4f_%02d", f_param, k_param, j);
+      }
       char mkdir_cmd[150];
       sprintf(mkdir_cmd, "mkdir -p %s", frames_dir);
       system(mkdir_cmd);
@@ -194,8 +208,12 @@ int calc(int s, double f_param, double k_param){
     ColorMapObject* colormap;
     char filename[50]; // Filename buffer
     
-    // Create GIF filename with "gif/" prefix
-    sprintf(filename, "gif/GrayScott-f%0.4f-k%0.4f-%02d.gif", f_param, k_param, j);
+    // Create GIF filename with appropriate prefix
+    if (use_band_initial) {
+      sprintf(filename, "gif_band/GrayScott-f%0.4f-k%0.4f-%02d.gif", f_param, k_param, j);
+    } else {
+      sprintf(filename, "gif/GrayScott-f%0.4f-k%0.4f-%02d.gif", f_param, k_param, j);
+    }
     
     // Create colormap
     colormap = create_colormap();
@@ -275,10 +293,21 @@ int calc(int s, double f_param, double k_param){
       Kv[n1] = 0;
     }
 
-    for(x=lattice_number_x/2-10;x<lattice_number_x/2+10;x++){
-      for(y=lattice_number_y/2-10;y<lattice_number_y/2+10;y++){
-        u[x*lattice_number_y+y]=0.5+0.2 * rand()/RAND_MAX -0.1;
-        v[x*lattice_number_y+y]=0.25+0.2 * rand()/RAND_MAX -0.1;
+    if (use_band_initial) {
+      // Band initial condition: 10x128 region
+      for(x=lattice_number_x/2-5;x<lattice_number_x/2+5;x++){
+        for(y=0;y<lattice_number_y;y++){
+          u[x*lattice_number_y+y]=0.5+0.2 * rand()/RAND_MAX -0.1;
+          v[x*lattice_number_y+y]=0.25+0.2 * rand()/RAND_MAX -0.1;
+        }
+      }
+    } else {
+      // Square initial condition: 20x20 region
+      for(x=lattice_number_x/2-10;x<lattice_number_x/2+10;x++){
+        for(y=lattice_number_y/2-10;y<lattice_number_y/2+10;y++){
+          u[x*lattice_number_y+y]=0.5+0.2 * rand()/RAND_MAX -0.1;
+          v[x*lattice_number_y+y]=0.25+0.2 * rand()/RAND_MAX -0.1;
+        }
       }
     }
 
@@ -338,7 +367,7 @@ int calc(int s, double f_param, double k_param){
           
           // Export PPM frame for MP4 if enabled
           if (OUTPUT_MP4) {
-            write_ppm_frame(u, frame_index, f_param, k_param, j);
+            write_ppm_frame(u, frame_index, f_param, k_param, j, use_band_initial);
           }
           
           // Set up graphic control extension for frame delay
@@ -393,7 +422,7 @@ int calc(int s, double f_param, double k_param){
     
     // Create MP4 from frames if enabled
     if (OUTPUT_MP4) {
-      create_mp4_from_frames(f_param, k_param, j);
+      create_mp4_from_frames(f_param, k_param, j, use_band_initial);
     }
     
     // Free allocated memory
@@ -416,14 +445,28 @@ int calc(int s, double f_param, double k_param){
   return 0;
 }
 
-int main(void){
+int main(int argc, char *argv[]){
+  // Parse command line arguments
+  int use_band_initial = 0;
+  for (int i = 1; i < argc; i++) {
+    if (strcmp(argv[i], "--band-initial-condition") == 0) {
+      use_band_initial = 1;
+    }
+  }
+  
   // Create output directories if they don't exist
   #ifdef _WIN32
     system("if not exist gif mkdir gif");
     system("if not exist mp4 mkdir mp4");
+    if (use_band_initial) {
+      system("if not exist gif_band mkdir gif_band");
+    }
   #else
     system("mkdir -p gif");
     system("mkdir -p mp4");
+    if (use_band_initial) {
+      system("mkdir -p gif_band");
+    }
   #endif
   
   // Reduce the parameter space to make testing faster
@@ -460,7 +503,7 @@ int main(void){
     double f_val = f_start + f_idx * f_step;
     double k_val = k_start + k_idx * k_step;
     
-    calc(1, f_val, k_val);
+    calc(1, f_val, k_val, use_band_initial);
     
     // Update progress (thread-safe)
     #pragma omp atomic

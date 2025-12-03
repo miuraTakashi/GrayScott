@@ -42,6 +42,9 @@ make clean && make
 
 # 実行
 ./gray_scott
+
+# 帯状初期分布で実行（10x128領域）
+./gray_scott --band-initial-condition
 ```
 
 ## 可視化ツール
@@ -70,14 +73,30 @@ jupyter lab fk_click_show_gif.ipynb
 
 ## 出力ファイル
 
-### GIFアニメーション
+### 通常モード（正方形初期分布: 20x20領域）
+
+#### GIFアニメーション
 ```
 gif/GrayScott-f0.0250-k0.0550-00.gif
 ```
 
-### MP4動画 (PowerPoint推奨)
+#### MP4動画 (PowerPoint推奨)
 ```
 mp4/GrayScott-f0.0250-k0.0550-00.mp4
+```
+
+### 帯状初期分布モード（`--band-initial-condition`オプション使用時）
+
+帯状初期分布（10x128領域）で実行した場合、結果は`gif_band/`フォルダに保存されます：
+
+#### GIFアニメーション
+```
+gif_band/GrayScott-f0.0250-k0.0550-00.gif
+```
+
+#### MP4動画
+```
+gif_band/GrayScott-f0.0250-k0.0550-00.mp4
 ```
 
 ## GIFフォルダの同期について
@@ -130,6 +149,20 @@ gifフォルダは約7.3GB、15,000個以上のファイルを含むため、Git
 ### メモリ使用量
 - **基本**: 約1MB (配列データ)
 - **一時ファイル**: 約100MB (PPMフレーム)
+
+## コマンドラインオプション
+
+### `--band-initial-condition`
+帯状初期分布を使用します。デフォルトの20×20の正方形領域の代わりに、10×128の帯状領域（x方向は中心から±5ピクセル、y方向は全体128ピクセル）を初期値(0.5, 0.25)に設定します。
+
+**使用例:**
+```bash
+./gray_scott --band-initial-condition
+```
+
+**出力先:**
+- 通常モード: `gif/`と`mp4/`フォルダ
+- 帯状初期分布モード: `gif_band/`フォルダ（GIFとMP4の両方）
 
 ## カスタマイズ
 
