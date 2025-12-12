@@ -89,6 +89,7 @@ void write_ppm_frame(double* u, int frame_number, double ff_val, double k_val, i
   
   #pragma omp parallel for collapse(2)
   for (int y = 0; y < lattice_number_y; y++) {
+    const int y_offset = y * lattice_number_x * 3;  // ループ不変式を外に出す
     for (int x = 0; x < lattice_number_x; x++) {
       double value = u[x * lattice_number_y + y];
       // Clamp value between 0 and 1
@@ -97,7 +98,7 @@ void write_ppm_frame(double* u, int frame_number, double ff_val, double k_val, i
       
       // Convert to RGB (grayscale)
       unsigned char intensity = (unsigned char)(value * 255);
-      int idx = (y * lattice_number_x + x) * 3;
+      int idx = y_offset + x * 3;  // 乗算を1回減らす
       pixel_buffer[idx] = intensity;     // Red
       pixel_buffer[idx + 1] = intensity; // Green  
       pixel_buffer[idx + 2] = intensity; // Blue
@@ -478,7 +479,7 @@ int main(int argc, char *argv[]){
   */
   
   // Parallel parameter sweep
-  printf("Gray-Scott parameter sweep: f=[0.005-0.07], k=[0.04-0.07], step=0.001\n");
+  printf("Gray-Scott parameter sweep: f=[0.005-0.07] (step=0.0005), k=[0.04-0.07] (step=0.00025)\n");
   printf("OpenMP threads: %d\n", omp_get_max_threads());
   
   // Define parameter ranges
